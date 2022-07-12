@@ -74,4 +74,4 @@ def Refractive_Index(Files, eVmin, eVmax, wl_step):
         plt.legend()
         plt.savefig('Output\\k interpolation of ' + file.split('\\')[-1].split('.')[0]+'.png', dpi = 300)
         plt.close()
-    #return ndata, kdata
+    return ndata, kdata

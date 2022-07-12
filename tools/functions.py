@@ -4,6 +4,7 @@ import scipy.constants as spc
 from tools.misc import extrapolate, interpolate
 
 import matplotlib.pyplot as plt
+
 def loadfile(file):
 
     # Returns the n and k of a csv file structured like the ones from

@@ -60,7 +60,6 @@ def Refractive_Index(Files, eVmin, eVmax, wl_step):
             ndata[:,:,filecounter] = interpolate(ntmp, wlmin, wlmax, wl_step)
             kdata[:,:,filecounter] = interpolate(ktmp, wlmin, wlmax, wl_step)
 
-
         else:
             ndata[:,:,filecounter] = interpolate(ndatatmp, wlmin, wlmax, wl_step)
             kdata[:,:,filecounter] = interpolate(kdatatmp, wlmin, wlmax, wl_step)

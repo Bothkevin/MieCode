@@ -64,6 +64,7 @@ def Refractive_Index(Files, eVmin, eVmax, wl_step):
             ndata[:,:,filecounter] = interpolate(ndatatmp, wlmin, wlmax, wl_step)
             kdata[:,:,filecounter] = interpolate(kdatatmp, wlmin, wlmax, wl_step)
 
+        #This is for quality control at the moment TODO: remove
         plt.plot(ndatatmp[:,0], ndatatmp[:,1],color="r",linestyle='dashed',label = 'n input')
         plt.plot(ndata[:,0,filecounter], ndata[:,1,filecounter],color="g",linestyle='dashed',label = 'n inter')
         plt.legend()
@@ -75,3 +76,5 @@ def Refractive_Index(Files, eVmin, eVmax, wl_step):
         plt.savefig('Output\\k interpolation of ' + file.split('\\')[-1].split('.')[0]+'.png', dpi = 300)
         plt.close()
     return ndata, kdata
+
+def SphericalMie():

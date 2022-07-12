@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import scipy.constants as spc
 from tools.misc import extrapolate, interpolate
+from scipy.special import spherical_jn, spherical_yn
+
 
 import matplotlib.pyplot as plt
 
@@ -77,4 +79,65 @@ def Refractive_Index(Files, eVmin, eVmax, wl_step):
         plt.close()
     return ndata, kdata
 
-def SphericalMie():
+def SphericalMie(z, L):
+    spher_jn = spherical_jn(L,z,derivative=False)
+    spherder_jn = spherical_jn(L,z,derivative=True)
+    spher_yn = spherical_yn(L,z,derivative=False)
+    spherder_yn = spherical_yn(L,z,derivative=True)
+
+    riccarr_jn_data = z * spher_jn
+    riccarrder_jn_data = spher_jn + z * spherder_jn
+    riccarr_yn_data = z * spher_yn
+    riccarrder_yn_data =  spher_yn + z * spherder_yn
+
+    return riccarr_jn_data, riccarrder_jn_data, riccarr_yn_data, riccarrder_yn_data
+
+def a_Lb_L(n, n_m, R):
+    q = False
+    filecounter = 0
+    L = 1
+    m = n[:, 1,filecounter]/n_m[:, 1, filecounter]
+    x = np.abs(1/n[:,0,filecounter])*R
+    a_Llist = []
+    b_Llist = []
+    while q == False:
+        jn_Lmx = SphericalMie(m*x,L)[0]
+        jnder_Lmx = SphericalMie(m*x,L )[1]
+        jn_Lx = SphericalMie(x,L)[0]
+        jnder_Lx = SphericalMie(x,L)[1]
+        yn_Lx = SphericalMie(x,L)[2]
+        ynder_Lx = SphericalMie(x,L)[3]
+        nn_Lx = jn_Lx + 1j*yn_Lx
+        nnder_Lx = jnder_Lx + 1j*ynder_Lx
+
+        a_L = (m*jn_Lmx*jnder_Lx-jnder_Lmx*jn_Lx)/(m*jn_Lmx*nnder_Lx-jnder_Lmx*nn_Lx)
+        b_L = (jn_Lmx*jnder_Lx-m*jnder_Lmx*jn_Lx)/(jn_Lmx*nnder_Lx-m*jnder_Lmx*nn_Lx)
+        if any(np.isnan(a_L)) == True:
+            q = True
+        elif any(np.isnan(b_L)) == True:
+            q = True
+        else:
+            L += 1
+            a_Llist.append(a_L)
+            b_Llist.append(b_L)
+        a_L = np.asarray(a_Llist)
+        b_L = np.asarray(b_Llist)
+
+    return a_L, b_L, L
+def crosss(a_L, b_L, L, n):
+    sigma_ext = 0
+    sigma_sca = 0
+
+    for i in range(1,(L)):
+        sigma_ext += (2*(i)+1)*(np.real(a_L[i-1]+b_L[i-1]))
+        sigma_sca += (2*(i)+1)*(np.conjugate(a_L[i-1])*(a_L[i-1])+np.conjugate(b_L[i-1])*(b_L[i-1]))
+    plt.figure(figsize = (15,5))
+    plt.plot(n[:,0, 0],sigma_ext,color="hotpink",linestyle='dashed',label = 'extinction')
+    plt.plot(n[:,0, 0],sigma_sca,color="plum",linestyle='dashed',label = 'scattering')
+    plt.plot(n[:,0, 0],sigma_ext - sigma_sca ,color="cornflowerblue",linestyle='dashed',label = 'absorption')
+    plt.xlabel(f'$\lambda [nm]$')
+    plt.ylabel('$\sigma$')
+    plt.legend()
+    plt.show()
+
+    return print('hei')

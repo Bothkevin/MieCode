@@ -5,7 +5,7 @@ from tools.misc import extrapolate, interpolate
 
 import matplotlib.pyplot as plt
 
-def loadfile(file):
+def Loadfile(file):
 
     # Returns the n and k of a csv file structured like the ones from
     # refractiveindex.info. wavelengths will be in nm
@@ -39,7 +39,7 @@ def Refractive_Index(Files, eVmin, eVmax, wl_step):
     filecounter = 0
     for file in Files:
 
-        ndatatmp, kdatatmp = loadfile(file)
+        ndatatmp, kdatatmp = Loadfile(file)
 
         if ndatatmp[-1,0] < wlmax or ndatatmp[0,0] > wlmin:
             ntmp = extrapolate(ndatatmp, wlmin, wlmax)

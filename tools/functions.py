@@ -108,9 +108,11 @@ def a_Lb_L(n, n_m, R):
         jnder_Lx = SphericalMie(x,L)[1]
         yn_Lx = SphericalMie(x,L)[2]
         ynder_Lx = SphericalMie(x,L)[3]
+        nn_Lx = jn_Lx + 1j*yn_Lx
+        nnder_Lx = jnder_Lx + 1j*ynder_Lx
 
-        a_L = (m*jn_Lmx*jnder_Lx-jnder_Lmx*jn_Lx)/(m*jn_Lmx*ynder_Lx-jnder_Lmx*yn_Lx)
-        b_L = (jn_Lmx*jnder_Lx-m*jnder_Lmx*jn_Lx)/(jn_Lmx*ynder_Lx-m*jnder_Lmx*yn_Lx)
+        a_L = (m*jn_Lmx*jnder_Lx-jnder_Lmx*jn_Lx)/(m*jn_Lmx*nnder_Lx-jnder_Lmx*nn_Lx)
+        b_L = (jn_Lmx*jnder_Lx-m*jnder_Lmx*jn_Lx)/(jn_Lmx*nnder_Lx-m*jnder_Lmx*nn_Lx)
         if any(np.isnan(a_L)) == True:
             q = True
         elif any(np.isnan(b_L)) == True:
@@ -126,19 +128,16 @@ def a_Lb_L(n, n_m, R):
 def crosss(a_L, b_L, L, n):
     sigma_ext = 0
     sigma_sca = 0
-    #print(np.asarray(a_Larr)[0][0][2])
-    #print((2*L+1)*np.real(np.asarray(a_Larr)[0][1]+np.asarray(b_Larr)[0][0]))
 
     for i in range(1,(L)):
         sigma_ext += (2*(i)+1)*(np.real(a_L[i-1]+b_L[i-1]))
-        #print(f'a_L[i][0]={a_L[i][0]}')
-        #print(f'a_L[i]={a_L[i]}')
         sigma_sca += (2*(i)+1)*(np.conjugate(a_L[i-1])*(a_L[i-1])+np.conjugate(b_L[i-1])*(b_L[i-1]))
     plt.figure(figsize = (15,5))
     plt.plot(n[:,0, 0],sigma_ext,color="hotpink",linestyle='dashed',label = 'extinction')
-    #plt.plot(x*1e6,sigma_ext,label = 'ext')
+    plt.plot(n[:,0, 0],sigma_sca,color="plum",linestyle='dashed',label = 'scattering')
+    plt.plot(n[:,0, 0],sigma_ext - sigma_sca ,color="cornflowerblue",linestyle='dashed',label = 'absorption')
     plt.xlabel(f'$\lambda [nm]$')
-    plt.ylabel('$\sigma_{ext}$')
+    plt.ylabel('$\sigma$')
     plt.legend()
     plt.show()
 

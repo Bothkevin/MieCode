@@ -85,7 +85,7 @@ def extrapolate(data, L_boundary, U_boundary):
         extrapolate_data = extrapolate_temp
 
     return extrapolate_data
-    
+
 
 def interpolate(data, L_boundary, U_boundary, step):
 

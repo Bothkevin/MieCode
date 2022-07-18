@@ -136,9 +136,9 @@ def crosss(a_L, b_L, L, n, Radius):
         sigma_sca += (2*(i)+1)*(np.conjugate(a_L[i-1])*(a_L[i-1])+np.conjugate(b_L[i-1])*(b_L[i-1]))
     geo_cross = np.pi*Radius**2
     plt.figure(figsize = (15,5))
-    plt.plot(n[:,0, 0],(n[:,0,0]**2)/(geo_cross*2*np.pi)*sigma_ext,color="hotpink",linestyle='dashed',label = 'extinction')
-    plt.plot(n[:,0, 0],(n[:,0,0]**2)/(geo_cross*2*np.pi)*sigma_sca,color="plum",linestyle='dashed',label = 'scattering')
-    plt.plot(n[:,0, 0],(n[:,0,0]**2)/(geo_cross*2*np.pi)*(sigma_ext - sigma_sca) ,color="cornflowerblue",linestyle='dotted',label = 'absorption')
+    plt.plot((spc.c * spc.h)/(n[:,0, 0]* spc.e) ,(n[:,0,0]**2)/(geo_cross*2*np.pi)*sigma_ext,color="hotpink",linestyle='dashed',label = 'extinction')
+    plt.plot((spc.c * spc.h)/(n[:,0, 0]* spc.e) ,(n[:,0,0]**2)/(geo_cross*2*np.pi)*sigma_sca,color="plum",linestyle='dashed',label = 'scattering')
+    plt.plot((spc.c * spc.h)/(n[:,0, 0]* spc.e) ,(n[:,0,0]**2)/(geo_cross*2*np.pi)*(sigma_ext - sigma_sca) ,color="cornflowerblue",linestyle='dotted',label = 'absorption')
     plt.xlabel(f'$\lambda [m]$')
     plt.ylabel('$ \dfrac{ \sigma }{ \sigma_{geo} }$')
     plt.legend()

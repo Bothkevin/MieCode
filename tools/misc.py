@@ -30,6 +30,7 @@ def files_manager(Particles, Matrices):
         for file in input_files:
             name = file.split('\\')[-1]
             structure.append(name.split('_')[0])
+            #print(f'name fil {name}, structure {structure}')
 
         for Particle in Particles:
             index = structure.index(Particle)
@@ -104,7 +105,7 @@ def Input():
     eVmax = 3
     wl_step = 1
 
-    R = 100*1E-9
+    R = 70*1E-9
     Type = 'Sphere'
     Particles = ['Au']
 

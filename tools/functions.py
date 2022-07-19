@@ -3,8 +3,6 @@ import numpy as np
 import scipy.constants as spc
 from tools.misc import extrapolate, interpolate
 from scipy.special import spherical_jn, spherical_yn
-
-
 import matplotlib.pyplot as plt
 
 def Loadfile(file):
@@ -92,12 +90,13 @@ def SphericalMie(z, L):
 
     return riccarr_jn_data, riccarrder_jn_data, riccarr_yn_data, riccarrder_yn_data
 
-def a_Lb_L(n, k, n_m, R):
+def a_Lb_L(n, k, n_m, k_m,R):
     q = False
     filecounter = 0
     L = 1
     n_complex = n + 1j*k
-    m = n_complex[:, 1,filecounter]/n_m[:, 1, filecounter]
+    m =n_m[:, 1, filecounter]/ n_complex[:, 1,filecounter]
+
     x = np.abs(1/n[:,0,filecounter])*R
     a_Llist = []
     b_Llist = []
@@ -108,8 +107,9 @@ def a_Lb_L(n, k, n_m, R):
         jnder_Lx = SphericalMie(x,L)[1]
         yn_Lx = SphericalMie(x,L)[2]
         ynder_Lx = SphericalMie(x,L)[3]
-        nn_Lx = jn_Lx + 1j*yn_Lx
-        nnder_Lx = jnder_Lx + 1j*ynder_Lx
+
+        nn_Lx = jn_Lx - 1j*yn_Lx
+        nnder_Lx = jnder_Lx - 1j*ynder_Lx
 
         a_L = (m*jn_Lmx*jnder_Lx-jnder_Lmx*jn_Lx)/(m*jn_Lmx*nnder_Lx-jnder_Lmx*nn_Lx)
         b_L = (jn_Lmx*jnder_Lx-m*jnder_Lmx*jn_Lx)/(jn_Lmx*nnder_Lx-m*jnder_Lmx*nn_Lx)
@@ -124,22 +124,28 @@ def a_Lb_L(n, k, n_m, R):
         a_L = np.asarray(a_Llist)
         b_L = np.asarray(b_Llist)
 
+
     return a_L, b_L, L
 
 
-def crosss(a_L, b_L, L, n, Radius):
+def crosss(a_L, b_L, L, n, n_m, Radius):
     sigma_ext = 0
     sigma_sca = 0
-
+    #print(Radius)
+    #print(n[:,0, 0])
     for i in range(1,(L)):
         sigma_ext += (2*(i)+1)*(np.real(a_L[i-1]+b_L[i-1]))
         sigma_sca += (2*(i)+1)*(np.conjugate(a_L[i-1])*(a_L[i-1])+np.conjugate(b_L[i-1])*(b_L[i-1]))
+    #print(f' ext {sigma_ext}')
     geo_cross = np.pi*Radius**2
+    print(f'radius {Radius}')
+    #print(k)
+    kvec = np.abs((2*np.pi*n_m[:,1,0])/n_m[:,0,0])
     plt.figure(figsize = (15,5))
-    plt.plot(n[:,0, 0],(n[:,0,0]**2)/(geo_cross*2*np.pi)*sigma_ext,color="hotpink",linestyle='dashed',label = 'extinction')
-    plt.plot(n[:,0, 0],(n[:,0,0]**2)/(geo_cross*2*np.pi)*sigma_sca,color="plum",linestyle='dashed',label = 'scattering')
-    plt.plot(n[:,0, 0],(n[:,0,0]**2)/(geo_cross*2*np.pi)*(sigma_ext - sigma_sca) ,color="cornflowerblue",linestyle='dotted',label = 'absorption')
-    plt.xlabel(f'$\lambda [m]$')
+    plt.plot((spc.h*spc.c)/(n[:,0, 0]*spc.e),-2*np.pi/((kvec)**2*geo_cross)*sigma_ext,color="hotpink",linestyle='solid',label = 'extinction')
+    plt.plot((spc.h*spc.c)/(n[:,0, 0]*spc.e),2*np.pi/((kvec)**2*geo_cross)*np.real(sigma_sca),color="plum",linestyle='dashed',label = 'scattering')
+    plt.plot((spc.h*spc.c)/(n[:,0, 0]*spc.e),2*np.pi/((kvec)**2*geo_cross)*(sigma_ext - np.real(sigma_sca)) ,color="cornflowerblue",linestyle='dotted',label = 'absorption')
+    plt.xlabel(f'$Energi [eV]$')
     plt.ylabel('$ \dfrac{ \sigma }{ \sigma_{geo} }$')
     plt.legend()
     plt.show()

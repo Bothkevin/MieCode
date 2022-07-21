@@ -105,7 +105,8 @@ def Input():
     eVmax = 3
     wl_step = 1
 
-    R = 70*1E-9
+    R = 50*1E-9
+
     Type = 'Sphere'
     Particles = ['Au']
 
